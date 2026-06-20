@@ -2,12 +2,18 @@ const { randomBytes } = require('@app-core/randomness');
 const CreatorCard = require('@app/repository/creator-card');
 
 const MIN_SLUG_LENGTH = 5;
-const SLUG_INVALID_CHARS_REGEX = /[^a-z0-9-_]/g;
+// No "g" flag: this is reused across requests via .test(), and a global regex's
+// lastIndex would carry over between calls, causing intermittent false negatives.
+const SLUG_INVALID_CHARS_REGEX = /[^a-z0-9-_]/;
 const URL_PROTOCOL_REGEX = /^https?:\/\//;
 const ACCESS_CODE_FORMAT_REGEX = /^[a-zA-Z0-9]+$/;
 
 function slugify(title) {
-  return title.trim().toLowerCase().replace(/\s+/g, '-').replace(SLUG_INVALID_CHARS_REGEX, '');
+  return title
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-_]/g, '');
 }
 
 async function isSlugTaken(slug) {

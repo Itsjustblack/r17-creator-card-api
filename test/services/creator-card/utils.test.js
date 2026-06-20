@@ -24,14 +24,10 @@ describe('services/creator-card/utils', () => {
 
   describe('SLUG_INVALID_CHARS_REGEX', () => {
     it('accepts slugs containing only letters, numbers, hyphens and underscores', () => {
-      // This regex has the "g" flag (it's also used with .replace in slugify), so calling
-      // .test() repeatedly carries state via lastIndex - reset it before each check.
-      SLUG_INVALID_CHARS_REGEX.lastIndex = 0;
       expect(SLUG_INVALID_CHARS_REGEX.test('valid-slug_123')).to.equal(false);
     });
 
     it('rejects slugs containing any other character', () => {
-      SLUG_INVALID_CHARS_REGEX.lastIndex = 0;
       expect(SLUG_INVALID_CHARS_REGEX.test('invalid slug!')).to.equal(true);
     });
   });
