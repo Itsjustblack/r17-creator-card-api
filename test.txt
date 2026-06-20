@@ -1,0 +1,98 @@
+# Creator Card API — HTTPie test requests
+# Docs reference: https://httpie.io/docs/cli/universal
+# Spec reference: https://assessments.r17.tech
+#
+# Replace BASE_URL with your local server (e.g. http://localhost:3000) or the deployed URL.
+BASE_URL=http://localhost:3000
+
+# =========================================================
+# VALID CASES
+# =========================================================
+
+# 1. Create a full card with all optional fields (public, published) -> 200
+http POST $BASE_URL/creator-cards \
+  title="Ada Designs Things" \
+  description="Brand & product design services" \
+  creator_reference="abcdefghij1234567890" \
+  status="published" \
+  access_type="public" \
+  links:='[{"title":"Portfolio","url":"https://ada.design"}]' \
+  service_rates:='{"currency":"NGN","rates":[{"name":"Logo Design","description":"Custom logo","amount":50000}]}'
+
+# 2. Create a card without slug -> auto-generated as "ada-designs-things" -> 200
+http POST $BASE_URL/creator-cards \
+  title="Ada Designs Things" \
+  creator_reference="abcdefghij1234567890" \
+  status="published"
+
+# 3. Create a private card with a valid 6-char alphanumeric access_code -> 200
+http POST $BASE_URL/creator-cards \
+  title="Private Card" \
+  slug="private-card" \
+  creator_reference="abcdefghij1234567890" \
+  status="published" \
+  access_type="private" \
+  access_code="ab12cd"
+
+# 4. Get a public, published card by slug -> 200
+http GET $BASE_URL/creator-cards/ada-designs-things
+
+# 5. Get a private card supplying the correct access_code -> 200
+http GET "$BASE_URL/creator-cards/private-card?access_code=ab12cd"
+
+# 6. Delete a card, supplying the matching creator_reference -> 200, `deleted` timestamp populated
+http DELETE $BASE_URL/creator-cards/private-card \
+  creator_reference="abcdefghij1234567890"
+
+# =========================================================
+# INVALID CASES
+# =========================================================
+
+# 7. Duplicate slug -> 400, code SL02
+http POST $BASE_URL/creator-cards \
+  title="Duplicate Slug Card" \
+  slug="ada-designs-things" \
+  creator_reference="abcdefghij1234567890" \
+  status="published"
+
+# 8. Private card created without access_code -> 400, code AC01
+http POST $BASE_URL/creator-cards \
+  title="Missing Access Code" \
+  creator_reference="abcdefghij1234567890" \
+  status="published" \
+  access_type="private"
+
+# 9. Public card created with an access_code -> 400, code AC05
+http POST $BASE_URL/creator-cards \
+  title="Public With Code" \
+  creator_reference="abcdefghij1234567890" \
+  status="published" \
+  access_type="public" \
+  access_code="ab12cd"
+
+# 10. Invalid status enum value -> 400 (VSL framework validation failure)
+http POST $BASE_URL/creator-cards \
+  title="Bad Status Card" \
+  creator_reference="abcdefghij1234567890" \
+  status="not-a-real-status"
+
+# 11. Get a card that doesn't exist -> 404, code NF01
+http GET $BASE_URL/creator-cards/does-not-exist
+
+# 12. Get a card that is still in draft -> 404, code NF02
+http POST $BASE_URL/creator-cards \
+  title="Draft Card" \
+  slug="draft-card" \
+  creator_reference="abcdefghij1234567890" \
+  status="draft"
+http GET $BASE_URL/creator-cards/draft-card
+
+# 13. Get a private card without supplying access_code -> 403, code AC03
+http GET $BASE_URL/creator-cards/private-card
+
+# 14. Get a private card with the wrong access_code -> 403, code AC04
+http GET "$BASE_URL/creator-cards/private-card?access_code=wrong1"
+
+# 15. Delete a card with a missing/wrong-length creator_reference -> 400 (VSL framework validation failure, length:20)
+http DELETE $BASE_URL/creator-cards/ada-designs-things \
+  creator_reference="tooshort"
