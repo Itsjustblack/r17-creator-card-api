@@ -1,15 +1,16 @@
 {
-  "name": "profold-be-api",
+  "name": "r17-creator-card-api",
   "version": "1.0.0",
   "description": "Project Scaffold for R17 Projects",
   "main": "app.js",
   "type": "commonjs",
   "repository": {
     "type": "git",
-    "url": "profold-be-api-1"
+    "url": "r17-creator-card-api"
   },
   "scripts": {
     "dev": "node --watch bootstrap.js",
+    "build": "node bootstrap.js",
     "test": "set USE_MOCK_MODEL=1 && mocha --recursive --require dotenv/config",
     "prepare": "husky",
     "commitlint": "commitlint --edit",
