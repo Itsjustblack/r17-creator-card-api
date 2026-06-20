@@ -1,19 +1,19 @@
 const { createHandler } = require('@app-core/server');
-const createCreatorCardService = require('@app/services/creator-card/create');
+const deleteCreatorCardService = require('@app/services/creator-card/delete');
 const messages = require('@app/messages/creator-card');
 
 module.exports = createHandler({
-  path: '/creator-cards',
-  method: 'post',
+  path: '/creator-cards/:slug',
+  method: 'delete',
   middlewares: [],
   async handler(rc, helpers) {
-    const payload = rc.body;
+    const payload = { ...rc.params, ...rc.body };
 
-    const response = await createCreatorCardService(payload);
+    const response = await deleteCreatorCardService(payload);
 
     return {
       status: helpers.http_statuses.HTTP_200_OK,
-      message: messages.CREATOR_CARD_CREATED,
+      message: messages.CREATOR_CARD_DELETED,
       data: response,
     };
   },

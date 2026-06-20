@@ -43,6 +43,7 @@ const parsedSpec = validator.parse(spec);
 async function createCreatorCard(serviceData) {
   const data = validator.validate(serviceData, parsedSpec);
   const accessType = data.access_type || ACCESS_TYPE.PUBLIC;
+  const isPrivate = accessType === ACCESS_TYPE.PRIVATE;
 
   if (data.slug && SLUG_INVALID_CHARS_REGEX.test(data.slug)) {
     throwAppError(CreatorCardMessages.INVALID_SLUG_FORMAT, ERROR_CODE.VALIDATIONERR);
@@ -58,21 +59,17 @@ async function createCreatorCard(serviceData) {
     throwAppError(CreatorCardMessages.INVALID_ACCESS_CODE_FORMAT, ERROR_CODE.VALIDATIONERR);
   }
 
-  let { slug } = data;
-
-  if (slug) {
-    if (await isSlugTaken(slug)) {
-      throwCreatorCardError(CREATOR_CARD_ERROR_CODE.SLUG_TAKEN);
-    }
-  } else {
-    slug = await generateUniqueSlug(data.title);
+  if (data.slug && (await isSlugTaken(data.slug))) {
+    throwCreatorCardError(CREATOR_CARD_ERROR_CODE.SLUG_TAKEN);
   }
 
-  if (accessType === ACCESS_TYPE.PRIVATE && !data.access_code) {
+  const slug = data.slug || (await generateUniqueSlug(data.title));
+
+  if (isPrivate && !data.access_code) {
     throwCreatorCardError(CREATOR_CARD_ERROR_CODE.ACCESS_CODE_REQUIRED_FOR_PRIVATE);
   }
 
-  if (accessType !== ACCESS_TYPE.PRIVATE && data.access_code) {
+  if (!isPrivate && data.access_code) {
     throwCreatorCardError(CREATOR_CARD_ERROR_CODE.ACCESS_CODE_NOT_ALLOWED_FOR_PUBLIC);
   }
 
@@ -82,9 +79,7 @@ async function createCreatorCard(serviceData) {
     access_type: accessType,
   });
 
-  const response = serializeCreatorCard(creatorCard);
-
-  return response;
+  return serializeCreatorCard(creatorCard);
 }
 
 module.exports = createCreatorCard;

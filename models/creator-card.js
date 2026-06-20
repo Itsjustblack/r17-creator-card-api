@@ -37,6 +37,7 @@ const schemaConfig = {
   },
   service_rates: {
     type: {
+      _id: false,
       currency: { type: SchemaTypes.String },
       rates: {
         type: [
