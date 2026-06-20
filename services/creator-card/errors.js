@@ -4,6 +4,8 @@ const { CreatorCardMessages } = require('@app/messages');
 /**
  * @readonly
  * @enum
+ * Codes are namespaced by category (SL = slug, AC = access, NF = not found) and numbered
+ * in the order they were added, not by validation order - gaps (e.g. no AC02) are expected.
  */
 const CREATOR_CARD_ERROR_CODE = {
   SLUG_TAKEN: 'SL02',

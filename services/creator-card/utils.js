@@ -18,6 +18,8 @@ async function isSlugTaken(slug) {
 async function generateUniqueSlug(title) {
   const baseSlug = slugify(title);
 
+  // Too-short slugs get a random suffix too, not just collisions - a bare 3-4 char
+  // slug is more likely to collide with someone else's auto-generated slug later.
   if (baseSlug.length < MIN_SLUG_LENGTH || (await isSlugTaken(baseSlug))) {
     return `${baseSlug}-${randomBytes(6)}`;
   }
