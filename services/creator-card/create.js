@@ -55,6 +55,12 @@ async function createCreatorCard(serviceData) {
     }
   });
 
+  (data.service_rates?.rates || []).forEach(({ amount }) => {
+    if (!Number.isInteger(amount)) {
+      throwAppError(CreatorCardMessages.INVALID_RATE_AMOUNT, ERROR_CODE.VALIDATIONERR);
+    }
+  });
+
   if (data.access_code && !ACCESS_CODE_FORMAT_REGEX.test(data.access_code)) {
     throwAppError(CreatorCardMessages.INVALID_ACCESS_CODE_FORMAT, ERROR_CODE.VALIDATIONERR);
   }

@@ -15,6 +15,7 @@ const ERROR_MESSAGES = {
   INVALID_SLUG_FORMAT: 'slug may only contain letters, numbers, hyphens and underscores',
   INVALID_LINK_URL: 'links must start with http:// or https://',
   INVALID_ACCESS_CODE_FORMAT: 'access_code must be exactly 6 alphanumeric characters',
+  INVALID_RATE_AMOUNT: 'amount must be a positive integer with no decimals',
 };
 
 module.exports = {
