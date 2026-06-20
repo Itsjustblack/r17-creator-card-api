@@ -5,7 +5,7 @@ const {
   throwCreatorCardError,
   CREATOR_CARD_ERROR_CODE,
 } = require('@app/services/creator-card/errors');
-const { ACCESS_TYPE } = require('@app/services/creator-card/constants');
+const { ACCESS_TYPE, STATUS_TYPE } = require('@app/services/creator-card/constants');
 const { CreatorCardMessages } = require('@app/messages');
 const {
   isSlugTaken,
@@ -33,8 +33,8 @@ const spec = `root {
       amount number<min:1>
     }
   }
-  status string(draft|published)
-  access_type? string(public|private)
+  status string(${Object.values(STATUS_TYPE).join('|')})
+  access_type? string(${Object.values(ACCESS_TYPE).join('|')})
   access_code? string<trim|length:6>
 }`;
 
